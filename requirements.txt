@@ -12,3 +12,4 @@ setuptools==71.0.3
 sqlparse==0.5.1
 virtualenv==20.26.3
 whitenoise==6.5.0
+django-summernote==0.8.20.0
