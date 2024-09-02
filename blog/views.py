@@ -31,3 +31,26 @@ def post_detail(request, slug):
         "blog/post_detail.html",
         {"post": post},
     )
+
+def event_detail(request, event_id):
+    """
+    Display an individual :model:`events.Event`.
+
+    **Context**
+
+    ``event``
+        An instance of :model:`events.Event`.
+
+    **Template:**
+
+    :template:`events/event_detail.html`
+    """
+
+    queryset = Event.objects.all()
+    event = get_object_or_404(queryset, event_id=event_id)
+
+    return render(
+        request,
+        "events/event_detail.html",
+        {"event": event}
+    )
