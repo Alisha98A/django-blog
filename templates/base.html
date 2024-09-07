@@ -166,6 +166,8 @@ url 'account_logout' as logout_url %}
       crossorigin="anonymous"
     ></script>
 
-    <script src="{% static 'js/script.js' %}"></script>
+    {% block extras %}
+    {% endblock %}
+    
   </body>
 </html>
