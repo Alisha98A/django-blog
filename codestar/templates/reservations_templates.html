@@ -15,20 +15,48 @@
 
 
 
-
 <!-- my_dashboard.html -->
 {% extends 'base.html' %}
-{% block content %}
-    <h1>Your Reservations</h1>
-    <ul>
-        {% for reservation in reservations %}
-            <li>{{ reservation.booking_date }} - {{ reservation.time_slot }} - {{ reservation.number_of_guests }} guests</li>
-        {% empty %}
-            <p>You don't have any reservations yet.</p>
-        {% endfor %}
-    </ul>
-{% endblock %}
 
+{% block title %}My Reservations{% endblock %}
+
+{% block content %}
+    <div class="container text-center">
+        <h2>Welcome, {{ user.first_name|default:user.username }}!</h2>
+        <p>
+            Our boat dining experience is designed to bring you and your guests an unforgettable time! 
+            The reservation is for the entire boat, with a capacity for 4 to 20 guests. During the 2-hour trip, you will enjoy a wonderful dining experience while traveling from the start to the end destination and then returning to the start.. The boat is available from 10:00 AM to 10:00 PM, Monday through Friday.
+        </p>
+        <p>
+            Please make your reservation at least 2 days in advance to secure your spot. 
+            We look forward to welcoming you aboard for a wonderful experience!
+        </p>
+
+        <!-- Big button for reservation -->
+        <a href="{% url 'reservation_form' %}" class="btn btn-primary btn-lg my-4">Make a Reservation</a>
+
+        <div class="mt-5">
+            <h2>Your Upcoming Reservations</h2>
+            <ul class="list-group">
+                {% for reservation in reservations %}
+                    <li class="list-group-item">
+                        <strong>{{ reservation.booking_date }}:</strong> 
+                        {{ reservation.time_slot }} - 
+                        {{ reservation.number_of_guests }} guests
+                    </li>
+                {% empty %}
+                    <p>You don't have any reservations yet. <a href="x">Make your reservation now!</a></p>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="mt-5">
+            <a href="x" class="btn btn-secondary">View Menu</a>
+            <a href="{% url 'profile' %}" class="btn btn-secondary">My Account</a>
+        </div>
+    </div>
+{% endblock %}
 
 
 
@@ -64,4 +92,114 @@
 </div>
 {% endblock %}
 
+
+
+
+
+
+
+
+
+
+
+reservation_form.html
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="reservation-form">
+    <h1>Make a Reservation</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <!-- Date and Time Slot Picker -->
+        <div>
+            <label for="id_booking_date_time">Select Date and Time</label>
+            <input type="text" name="booking_date_time" id="id_booking_date_time" required>
+        </div>
+
+        <!-- Number of Guests -->
+        <div>
+            <label for="number_of_guests">Number of Guests</label>
+            <input type="number" name="number_of_guests" id="number_of_guests" min="4" max="20" required>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">Confirm Reservation</button>
+    </form>
+
+    <p>If you have any questions, please contact our support.</p>
+</div>
+
+<!-- Flatpickr Integration -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const calendar = document.querySelector('#id_booking_date_time');
+
+        fetch('/unavailable-dates/')
+            .then(response => response.json())
+            .then(data => {
+                const unavailableDates = data.unavailable_dates;
+
+                flatpickr(calendar, {
+                    dateFormat: "Y-m-d H:i", // Include time in the format
+                    minDate: "today",
+                    disable: unavailableDates.map(date => new Date(date)),
+                    enableTime: true, // Allow selecting time slots
+                    noCalendar: false, // Enable calendar for date selection
+                    time_24hr: true, // Use 24-hour format for time
+                    minuteIncrement: 60, // Only allow full hour slots (e.g., 10:00, 12:00, etc.)
+                });
+            });
+    });
+</script>
+{% endblock %}
+
+
+
+
+
+
+staff_reservation_management.html
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Manage Reservations</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>User</th>
+        <th>Boat</th>
+        <th>Booking Date</th>
+        <th>Time Slot</th>
+        <th>Number of Guests</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for reservation in reservations %}
+        <tr>
+          <td>{{ reservation.user.username }}</td>
+          <td>{{ reservation.boat.name }}</td>
+          <td>{{ reservation.booking_date }}</td>
+          <td>{{ reservation.time_slot }}</td>
+          <td>{{ reservation.number_of_guests }}</td>
+          <td>
+            <a href="{% url 'edit_reservation' reservation.id %}">Edit</a> |
+            <a href="{% url 'delete_reservation' reservation.id %}">Delete</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h3>Available Time Slots</h3>
+  <ul>
+    {% for slot, boats_available in available_time_slots.items %}
+      <li>{{ slot }} ({{ boats_available }} boat(s) available)</li>
+    {% endfor %}
+  </ul>
+{% endblock %}
 
