@@ -1,0 +1,67 @@
+<!-- staff_dashboard.html -->
+{% extends 'base.html' %}
+{% block content %}
+    <h1>All Reservations</h1>
+    <ul>
+        {% for reservation in reservations %}
+            <li>{{ reservation.booking_date }} - {{ reservation.time_slot }} - {{ reservation.user.username }} - {{ reservation.number_of_guests }} guests</li>
+        {% empty %}
+            <p>No reservations available.</p>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
+
+
+
+
+
+<!-- my_dashboard.html -->
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Your Reservations</h1>
+    <ul>
+        {% for reservation in reservations %}
+            <li>{{ reservation.booking_date }} - {{ reservation.time_slot }} - {{ reservation.number_of_guests }} guests</li>
+        {% empty %}
+            <p>You don't have any reservations yet.</p>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
+
+
+
+
+
+<!-- 403 error -->
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Access Denied</h1>
+<p>Sorry, you do not have permission to view this page.</p>
+<p>If you believe this is an error, please contact the site administrator.</p>
+<a href="{% url 'home' %}" class="btn btn-primary">Go to Home</a>
+{% endblock %}
+
+
+
+
+<!-- reservation_selection.html -->
+{% extends "base.html" %}
+
+{% block title %}Reservation Selection{% endblock %}
+
+{% block content %}
+<div class="container text-center mt-5">
+    <h1>Select Reservation Type</h1>
+    <p>Choose whether you are a customer or staff to proceed with your reservation.</p>
+        <div class="d-flex justify-content-center mt-4">
+            <a href="{% url 'dashboard' %}" class="btn btn-primary me-3">Customer Login</a>
+            <a href="{% url 'account_login' %}?next={% url 'staff_dashboard' %}" class="btn btn-secondary">Staff Login</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
